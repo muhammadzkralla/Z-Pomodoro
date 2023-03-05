@@ -4,6 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Android Projects/ZPomodoro/app/src/main/res/layout/activity_main.xml" value="0.16576086956521738" />
+        <entry key="..\:/Android Projects/ZPomodoro/app/src/main/res/layout/fragment_alarm.xml" value="0.22083333333333333" />
+        <entry key="..\:/Android Projects/ZPomodoro/app/src/main/res/layout/fragment_main.xml" value="0.21979166666666666" />
+        <entry key="..\:/Android Projects/ZPomodoro/app/src/main/res/layout/fragment_pomodoro.xml" value="0.22083333333333333" />
+        <entry key="..\:/Android Projects/ZPomodoro/app/src/main/res/layout/fragment_stats.xml" value="0.22083333333333333" />
       </map>
     </option>
   </component>
