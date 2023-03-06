@@ -1,6 +1,8 @@
 package com.zkrallah.z_pomodoro.ui.pomodoro
 
 import android.annotation.SuppressLint
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -11,10 +13,13 @@ import com.zkrallah.z_pomodoro.alarm.AndroidAlarmScheduler
 import com.zkrallah.z_pomodoro.databinding.FragmentPomodoroBinding
 import com.zkrallah.z_pomodoro.model.Alarm
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 class PomodoroFragment : Fragment() {
     private lateinit var binding: FragmentPomodoroBinding
     private lateinit var counter: CountDownTimer
+    private lateinit var preferences: SharedPreferences
+    var alarmItem: Alarm? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,7 +29,6 @@ class PomodoroFragment : Fragment() {
         binding = FragmentPomodoroBinding.inflate(inflater, container, false)
 
         val scheduler = AndroidAlarmScheduler(requireContext())
-        var alarmItem: Alarm? = null
 
         binding.startBtn.setOnClickListener {
             val duration = binding.edtTimer.text.toString().toLong()
@@ -55,6 +59,27 @@ class PomodoroFragment : Fragment() {
 
         }
         counter.start()
+    }
+
+    override fun onStop() {
+        preferences = requireActivity().getSharedPreferences("prefs", MODE_PRIVATE)
+        val editor = preferences.edit()
+        if (alarmItem != null){
+            editor.putBoolean("timerActive", true)
+            editor.putLong("endTime", alarmItem!!.time.atZone(ZoneId.systemDefault()).toEpochSecond())
+            editor.apply()
+        }
+        super.onStop()
+    }
+
+    override fun onStart() {
+        preferences = requireActivity().getSharedPreferences("prefs", MODE_PRIVATE)
+        val timerActive = preferences.getBoolean("timerActive", false)
+        if (timerActive){
+            val endTime = preferences.getLong("endTime", LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond())
+            startCountDown(endTime.minus(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()) * 1000)
+        }
+        super.onStart()
     }
 
 }
