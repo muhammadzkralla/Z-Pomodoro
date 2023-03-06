@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import com.zkrallah.z_pomodoro.model.Alarm
 import com.zkrallah.z_pomodoro.receiver.AlarmReceiver
+import java.time.LocalDateTime
 import java.time.ZoneId
 
 class AndroidAlarmScheduler(
@@ -14,6 +15,7 @@ class AndroidAlarmScheduler(
 ): AlarmScheduler {
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
+    var timeLeft = 0L
 
     @SuppressLint("MissingPermission")
     override fun schedule(item: Alarm) {
@@ -30,6 +32,8 @@ class AndroidAlarmScheduler(
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )
+        timeLeft = item.time.atZone(ZoneId.systemDefault()).toEpochSecond()
+            .minus(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()) * 1000
     }
 
     override fun cancel(item: Alarm) {
