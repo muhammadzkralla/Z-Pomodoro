@@ -4,8 +4,10 @@
     package="com.zkrallah.z_pomodoro">
 
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -24,6 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name=".alarm.AndroidAlarmScheduler"/>
         <receiver android:name=".receiver.AlarmReceiver"/>
     </application>
 
