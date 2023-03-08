@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.zkrallah.z_pomodoro.alarm.AndroidAlarmScheduler
+import com.zkrallah.z_pomodoro.alarm.PomodoroScheduler
 import com.zkrallah.z_pomodoro.databinding.FragmentPomodoroBinding
 import java.time.LocalDateTime
 
@@ -22,14 +22,14 @@ class PomodoroFragment : Fragment() {
 
         binding.startBtn.setOnClickListener {
             val duration = binding.edtTimer.text.toString().toLong()
-            val serviceIntent = Intent(activity, AndroidAlarmScheduler::class.java).apply {
+            val serviceIntent = Intent(activity, PomodoroScheduler::class.java).apply {
                 putExtra("time",
                     (LocalDateTime.now().plusSeconds(duration)).toString())
             }
             activity?.startForegroundService(serviceIntent)
         }
         binding.cancelBtn.setOnClickListener {
-            val serviceIntent = Intent(requireActivity(), AndroidAlarmScheduler::class.java)
+            val serviceIntent = Intent(requireActivity(), PomodoroScheduler::class.java)
             activity?.stopService(serviceIntent)
             binding.timeLeft.text = "0:0"
         }
