@@ -1,11 +1,11 @@
 package com.zkrallah.z_pomodoro
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.viewpager.widget.ViewPager
-import com.google.android.material.tabs.TabLayout
+import com.zkrallah.z_pomodoro.service.PomodoroScheduler
 import com.zkrallah.z_pomodoro.databinding.ActivityMainBinding
-import com.zkrallah.z_pomodoro.ui.main.SectionsPagerAdapter
+import java.time.LocalDateTime
 
 
 class MainActivity : AppCompatActivity() {
@@ -16,10 +16,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
-        val viewPager: ViewPager = binding.viewPager
-        viewPager.adapter = sectionsPagerAdapter
-        val tabs: TabLayout = binding.tabs
-        tabs.setupWithViewPager(viewPager)
+
+        binding.startBtn.setOnClickListener {
+            val duration = binding.edtTimer.text.toString().toLong()
+            val serviceIntent = Intent(this, PomodoroScheduler::class.java).apply {
+                putExtra("time",
+                    (LocalDateTime.now().plusSeconds(duration)).toString())
+            }
+            startForegroundService(serviceIntent)
+        }
+        binding.cancelBtn.setOnClickListener {
+            val serviceIntent = Intent(this, PomodoroScheduler::class.java)
+            stopService(serviceIntent)
+            binding.timeLeft.text = "0:0"
+        }
     }
 }

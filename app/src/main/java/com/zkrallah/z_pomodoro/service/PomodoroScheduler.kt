@@ -1,4 +1,4 @@
-package com.zkrallah.z_pomodoro.alarm
+package com.zkrallah.z_pomodoro.service
 
 import android.R
 import android.app.NotificationManager
