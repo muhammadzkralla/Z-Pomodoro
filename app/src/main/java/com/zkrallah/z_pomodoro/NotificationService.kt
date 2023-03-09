@@ -4,13 +4,17 @@ import android.R
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 class NotificationService(private val context: Context) {
 
     // Create the notification manager instance
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private val preferences = context.getSharedPreferences("prefs", MODE_PRIVATE)
 
     fun showNotification(){
         // Apply the pending intent to launch an action once clicked on
@@ -29,6 +33,14 @@ class NotificationService(private val context: Context) {
             .setContentText("the timer is DONE")
             .setContentIntent(pendingIntent)
             .build()
+
+        val editor = preferences.edit()
+        editor.putBoolean("timer", false)
+        editor.putLong(
+            "endDate",
+            LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()
+        )
+        editor.apply()
 
         // Shows the notifications
         notificationManager.notify(1, notification)

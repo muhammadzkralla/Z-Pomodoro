@@ -60,26 +60,8 @@ class PomodoroScheduler : Service() {
     }
 
     override fun onDestroy() {
-        // Once the Timer is done, send a Notification and close the service
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        // Apply the pending intent to launch an action once clicked on
-        val activity = Intent(this@PomodoroScheduler, MainActivity::class.java)
-        val pending = PendingIntent.getActivity(
-            this@PomodoroScheduler
-            , 1
-            , activity
-            , PendingIntent.FLAG_IMMUTABLE
-        )
-
-        // This is the Notification object itself, this notification belongs to the specified channel id
-        val notificationDone = NotificationCompat.Builder(this@PomodoroScheduler, NotificationService.CHANNEL_ID)
-            .setSmallIcon(R.drawable.sym_def_app_icon)
-            .setContentTitle("Pomodoro")
-            .setContentText("the timer is DONE")
-            .setContentIntent(pending)
-            .build()
-
-        notificationManager.notify(3, notificationDone)
+        val service = NotificationService(this)
+        service.showNotification()
         super.onDestroy()
     }
 
