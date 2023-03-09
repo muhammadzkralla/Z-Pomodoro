@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.text.InputType.TYPE_NULL
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.zkrallah.z_pomodoro.databinding.ActivityMainBinding
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var preferences: SharedPreferences
     private var isTimerActive: Boolean = false
     private var counter: CountDownTimer? = null
+    private var duration = 0L
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,26 +29,39 @@ class MainActivity : AppCompatActivity() {
 
         preferences = getSharedPreferences("prefs", MODE_PRIVATE)
 
+        binding.pomodoroBtn.setOnClickListener {
+            binding.timeLeft.text = "25:00"
+            duration = 1500L
+        }
+
+        binding.breakBtn.setOnClickListener {
+            binding.timeLeft.text = "5:00"
+            duration = 300L
+        }
+
         binding.startBtn.setOnClickListener {
-            val duration = binding.edtTimer.text.toString().toLong()
-            val serviceIntent = Intent(this, PomodoroScheduler::class.java).apply {
-                putExtra(
-                    "time",
-                    (LocalDateTime.now().plusSeconds(duration)).toString()
+            if (duration != 0L) {
+                val serviceIntent = Intent(this, PomodoroScheduler::class.java).apply {
+                    putExtra(
+                        "time",
+                        (LocalDateTime.now().plusSeconds(duration)).toString()
+                    )
+                }
+                startForegroundService(serviceIntent)
+                val editor = preferences.edit()
+                editor.putBoolean("timer", true)
+                editor.putLong(
+                    "endDate", LocalDateTime.now()
+                        .plusSeconds(duration)
+                        .atZone(ZoneId.systemDefault()).toEpochSecond()
+                )
+                editor.apply()
+                startCounterUI(
+                    LocalDateTime.now()
+                        .plusSeconds(duration)
+                        .atZone(ZoneId.systemDefault()).toEpochSecond()
                 )
             }
-            startForegroundService(serviceIntent)
-            val editor = preferences.edit()
-            editor.putBoolean("timer", true)
-            editor.putLong(
-                "endDate", LocalDateTime.now()
-                    .plusSeconds(duration)
-                    .atZone(ZoneId.systemDefault()).toEpochSecond()
-            )
-            editor.apply()
-            startCounterUI(LocalDateTime.now()
-                .plusSeconds(duration)
-                .atZone(ZoneId.systemDefault()).toEpochSecond())
         }
         binding.cancelBtn.setOnClickListener {
             val serviceIntent = Intent(this, PomodoroScheduler::class.java)
@@ -60,6 +75,7 @@ class MainActivity : AppCompatActivity() {
             )
             editor.apply()
             counter?.cancel()
+            duration = 0L
         }
     }
 
@@ -83,6 +99,7 @@ class MainActivity : AppCompatActivity() {
                     LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()
                 )
                 editor.apply()
+                duration = 0L
             }
 
         }
@@ -105,6 +122,7 @@ class MainActivity : AppCompatActivity() {
                 )
                 editor.apply()
                 isTimerActive = false
+                duration = 0L
             } else
                 startCounterUI(endDate)
         }
