@@ -16,7 +16,7 @@ class App : Application() {
     private fun createNotificationChannel() {
         val name = "Z-Pomodoro"
         val descriptionText = "This is the Description of Channel 1"
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val importance = NotificationManager.IMPORTANCE_HIGH
         val channel = NotificationChannel(NotificationService.CHANNEL_ID, name, importance).apply {
             description = descriptionText
         }

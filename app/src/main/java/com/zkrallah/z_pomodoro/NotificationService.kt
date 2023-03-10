@@ -32,6 +32,7 @@ class NotificationService(private val context: Context) {
             .setContentTitle("Pomodoro")
             .setContentText("the timer is DONE")
             .setContentIntent(pendingIntent)
+            .setVibrate(longArrayOf(1000, 1000, 1000, 1000, 1000))
             .build()
 
         val editor = preferences.edit()

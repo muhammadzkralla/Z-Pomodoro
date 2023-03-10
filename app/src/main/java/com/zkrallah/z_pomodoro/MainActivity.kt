@@ -62,6 +62,9 @@ class MainActivity : AppCompatActivity() {
                         .atZone(ZoneId.systemDefault()).toEpochSecond(),
                     duration
                 )
+                binding.startBtn.isClickable = false
+                binding.pomodoroBtn.isClickable = false
+                binding.breakBtn.isClickable = false
             }
         }
         binding.cancelBtn.setOnClickListener {
@@ -79,6 +82,9 @@ class MainActivity : AppCompatActivity() {
             counter?.cancel()
             duration = 0L
             binding.progressBar.progress = 100
+            binding.startBtn.isClickable = true
+            binding.pomodoroBtn.isClickable = true
+            binding.breakBtn.isClickable = true
         }
     }
 
@@ -106,6 +112,9 @@ class MainActivity : AppCompatActivity() {
                 editor.putLong("type", 0L)
                 editor.apply()
                 duration = 0L
+                binding.startBtn.isClickable = true
+                binding.pomodoroBtn.isClickable = true
+                binding.breakBtn.isClickable = true
             }
 
         }
@@ -130,9 +139,15 @@ class MainActivity : AppCompatActivity() {
                 editor.apply()
                 isTimerActive = false
                 duration = 0L
+                binding.startBtn.isClickable = true
+                binding.pomodoroBtn.isClickable = true
+                binding.breakBtn.isClickable = true
             } else {
                 val type = preferences.getLong("type", 0L)
                 startCounterUI(endDate, type)
+                binding.startBtn.isClickable = false
+                binding.pomodoroBtn.isClickable = false
+                binding.breakBtn.isClickable = false
             }
         }
         super.onStart()
