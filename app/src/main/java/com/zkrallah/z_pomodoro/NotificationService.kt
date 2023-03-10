@@ -40,6 +40,7 @@ class NotificationService(private val context: Context) {
             "endDate",
             LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()
         )
+        editor.putLong("type", 0L)
         editor.apply()
 
         // Shows the notifications

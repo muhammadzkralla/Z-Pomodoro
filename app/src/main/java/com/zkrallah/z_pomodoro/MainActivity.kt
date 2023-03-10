@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.text.InputType.TYPE_NULL
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.zkrallah.z_pomodoro.databinding.ActivityMainBinding
@@ -55,40 +54,46 @@ class MainActivity : AppCompatActivity() {
                         .plusSeconds(duration)
                         .atZone(ZoneId.systemDefault()).toEpochSecond()
                 )
+                editor.putLong("type", duration)
                 editor.apply()
                 startCounterUI(
                     LocalDateTime.now()
                         .plusSeconds(duration)
-                        .atZone(ZoneId.systemDefault()).toEpochSecond()
+                        .atZone(ZoneId.systemDefault()).toEpochSecond(),
+                    duration
                 )
             }
         }
         binding.cancelBtn.setOnClickListener {
             val serviceIntent = Intent(this, PomodoroScheduler::class.java)
             stopService(serviceIntent)
-            binding.timeLeft.text = "0:0"
+            binding.timeLeft.text = "00:00"
             val editor = preferences.edit()
             editor.putBoolean("timer", false)
             editor.putLong(
                 "endDate",
                 LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()
             )
+            editor.putLong("type", 0L)
             editor.apply()
             counter?.cancel()
             duration = 0L
+            binding.progressBar.progress = 100
         }
     }
 
-    private fun startCounterUI(endDate: Long) {
+    private fun startCounterUI(endDate: Long, type: Long) {
         val time = endDate
             .minus(LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()) * 1000
-        Toast.makeText(this, time.toString(), Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, time.div(1000).toString(), Toast.LENGTH_SHORT).show()
         counter = object : CountDownTimer(time, 1000) {
             @SuppressLint("SetTextI18n")
             override fun onTick(millisUntilFinished: Long) {
                 val minutes = (millisUntilFinished / 1000) / 60
                 val seconds = (millisUntilFinished / 1000) % 60
                 binding.timeLeft.text = "$minutes:$seconds"
+                binding.progressBar.progress =
+                    millisUntilFinished.toDouble().div(type.times(1000).toDouble()).times(100).toInt()
             }
 
             override fun onFinish() {
@@ -98,6 +103,7 @@ class MainActivity : AppCompatActivity() {
                     "endDate",
                     LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()
                 )
+                editor.putLong("type", 0L)
                 editor.apply()
                 duration = 0L
             }
@@ -120,11 +126,14 @@ class MainActivity : AppCompatActivity() {
                     "endDate",
                     LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond()
                 )
+                editor.putLong("type", 0L)
                 editor.apply()
                 isTimerActive = false
                 duration = 0L
-            } else
-                startCounterUI(endDate)
+            } else {
+                val type = preferences.getLong("type", 0L)
+                startCounterUI(endDate, type)
+            }
         }
         super.onStart()
     }
